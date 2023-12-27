@@ -12,23 +12,36 @@ Lets understand this problem with a real input:
 
 A <b>brute-force</b> algorithm will calculate the sum of every 5-element contiguous subarray of the given array and divide the sum by 5 to find the average.
 
-````js
-function findAvgOfSubarrays(arr, K) {
-  const results = []
-  
-  for(let i = 0; i < arr.length - K + 1; i++) {
-    let sum = 0
-    
-    for(let j = i; j < i + K; j++) {
-      sum += arr[j]
+````java
+import java.util.Arrays;
+import java.util.List;
+
+public class AverageOfSubarrays {
+
+    public static double[] findAvgOfSubarrays(int[] arr, int K) {
+        double[] results = new double[arr.length - K +1];
+
+        for (int i = 0; i < arr.length - K + 1; i++) {
+            // find sum of next 'K' elements
+            double sum = 0;
+
+            for (int j = i; j < i + K; j++) {
+                sum += arr[j];
+            }
+            results[i] = sum / K; //calculate average
+        }
+        return results;
     }
-    results.push(sum/K)  
-  }
-  return results
+
+    public static void main(String[] args) {
+        int[] inputArray = new int[]{1, 3, 2, 6, -1, 4, 1, 8, 2};
+        int subarraySize = 5;
+
+         double[] averages = findAvgOfSubarrays(inputArray, subarraySize);
+
+        System.out.println("Averages of subarrays: " + Arrays.toString(averages));
+    }
 }
-
-
-findAvgOfSubarrays([1, 3, 2, 6, -1, 4, 1, 8, 2], 5)
 ````
 
 <b>Time complexity: </b> Since for every element of the input array, we are calculating the sum of its next `K` elements, the time complexity of the above algorithm will be `O(N*K)` where `N` is the number of elements in the input array.
@@ -36,44 +49,54 @@ findAvgOfSubarrays([1, 3, 2, 6, -1, 4, 1, 8, 2], 5)
 #### Can we find a better solution? Do you see any inefficiency in the above approach?
 
 The inefficiency is that for any two consecutive subarrays of size `5`, the overlapping part (which will contain four elements) will be evaluated twice.
-
+![](./images/slidingWindow1.png)
 The efficient way to solve this problem would be to visualize each contiguous subarray as a <i>sliding window</i> of `5` elements. This means that we will slide the window by one element when we move on to the next subarray. To reuse the sum from the previous subarray, we will subtract the element going out of the window and add the element now being included in the <i>sliding window</i>. This will save us from going through the whole subarray to find the sum and, as a result, the algorithm complexity will reduce to `O(N)`.
-
+![](./images/slidingWindow2.png)
 Here is the algorithm for the <b>Sliding Window</b> approach:
-````js
-function findAveragesOfSubarrays(arr, k) {
-  //sliding window approach
-  
-  const results = []
-  let windowSum = 0
-  let windowStart = 0
-  
-  for(let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    //add the next element
-    windowSum += arr[windowEnd]
-    
-    //slide the window forward 
-    //we don't need to slide if we have not hit the required window size of k
-    
-    if (windowEnd >= k - 1) {
-      //we are **AUTOMATICALLY** returning the window average once we hit the window size of k
-      //and pushing to the output array
-      results.push(windowSum/k)
-      
-      //subtracting the element going out
-      windowSum -= arr[windowStart]
-      
-      //then sliding the window forward
-      windowStart++
-      
-      //adding the element coming in, in the outer/previous loop
-      //and repeating this process until we hit the end of the array
-    } 
-  }
-  return results
+````java
+import java.util.ArrayList;
+import java.util.List;
+
+public class AveragesOfSubarrayOfSizeK {
+
+    public static double[] findAveragesOfSubarrays(int[] arr, int k) {
+        double[] results = new double[arr.length - K + 1]
+        double windowSum = 0;
+        int windowStart = 0;
+
+        for (int windowEnd = 0; windowEnd < arr.length; windowEnd++) {
+            // Add the next element
+            windowSum += arr[windowEnd];
+
+            // Slide the window forward
+            // We don't need to slide if we have not hit the required window size of k
+            if (windowEnd >= k - 1) {
+                // We are automatically returning the window average once we hit the window size of k
+                // and pushing to the output array
+                results.add(windowSum / k);
+
+                // Subtracting the element going out
+                windowSum -= arr[windowStart];
+
+                // Then sliding the window forward
+                windowStart++;
+                // Adding the element coming in, in the outer/previous loop
+                // and repeating this process until we hit the end of the array
+            }
+        }
+        return results;
+    }
+
+    public static void main(String[] args) {
+        int[] inputArray = {1, 3, 2, 6, -1, 4, 1, 8, 2};
+        int subarraySize = 5;
+
+        List<Double> averages = findAveragesOfSubarrays(inputArray, subarraySize);
+
+        System.out.println("Averages of subarrays: " + averages);
+    }
 }
 
-findAveragesOfSubarrays([1, 3, 2, 6, -1, 4, 1, 8, 2], 5)//[2.2, 2.8, 2.4, 3.6, 2.8]
 ````
 ## Maximum Sum Subarray of Size K (easy)
 https://leetcode.com/problems/largest-subarray-length-k/
@@ -81,30 +104,38 @@ https://leetcode.com/problems/largest-subarray-length-k/
 ### Brute Force
 
 A basic brute force solution will be to calculate the sum of all `K` sized subarrays of the given array to find the subarray with the highest sum. We can start from every index of the given array and add the next `K` elements to find the subarrays sum.
-````js
-function maxSubarrayOfSizeK(arr, k) {
-  //brute force
-  let maxSum = 0
-  let windowSum = 0
-  
-  //loop through array
-  for(let i = 0; i < arr.length -k + 1; i++) {
-    
-    //keep track of sum in current window
-    windowSum = 0
-    for(let j = i; j < i + k; j++) {
-      windowSum += arr[j]
+
+![](./images/slidingWindow3.png)
+
+````java
+public class MaxSubarrayOfSizeK {
+
+    public static int maxSubarrayOfSizeK(int k, int[] arr) {
+        // Brute force approach
+        int maxSum = 0;
+
+        // Loop through array
+        for (int i = 0; i <= arr.length - k; i++) {
+            // Keep track of sum in the current window
+            int windowSum = 0;
+
+            for (int j = i; j < i + k; j++) {
+                windowSum += arr[j];
+            }
+
+            // If currentWindowSum is greater than maxWindowSum, update maxWindowSum
+            maxSum = Math.max(maxSum, windowSum);
+        }
+
+        return maxSum;
     }
-    
-    //if currentWindowSum is > maxWindowSum
-    //set currentWindwoSum to maxWindowSum
-    maxSum = Math.max(maxSum, windowSum)
-  }
-  return maxSum
+
+    public static void main(String[] args) {
+        System.out.println(maxSubarrayOfSizeK(3, new int[]{2, 1, 5, 1, 3, 2})); // 9
+        System.out.println(maxSubarrayOfSizeK(2, new int[]{2, 3, 4, 1, 5}));    // 7
+    }
 }
 
-maxSubarrayOfSizeK(3, [2, 1, 5, 1, 3, 2])//9
-maxSubarrayOfSizeK(2, [2, 3, 4, 1, 5])//7
 ````
 - Time complexity will be `O(N*K)`, where `N` is the total number of elements in the given array
 
@@ -114,36 +145,33 @@ If you observe closely, you will realize that to calculate the sum of a contiguo
 2. Add the new element getting included in the <i>sliding window</i>, i.e., the element coming right after the end of the window.
 
 This approach will save us from re-calculating the sum of the overlapping part of the <i>sliding window</i>. 
-````js
-function maxSubarrayOfSizeK(arr, k) {
-  //sliding window
-  let maxSum = 0
-  let windowSum = 0
-  let windowStart = 0
-  
-  //loop through array
-  for(let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    //add the next element
-    windowSum += arr[windowEnd]
-    
-    //slide the window, we dont need to slid if we
-    //haven't hit the required window size of 'k'
-    if(windowEnd >= k -1) {
-      maxSum = Math.max(maxSum, windowSum)
-      
-      //subtract the element going out
-      windowSum -= arr[windowStart]
-      
-      //slide the window ahead
-      windowStart ++
+````java
+public class MaxSubarrayOfSizeK {
+
+    public static int maxSubarrayOfSizeK(int k, int[] arr) {
+        // Brute force approach
+        int windowSum = 0, maxSum = 0;
+        int windowStart = 0;
+
+        // Loop through array
+        for (int windowEnd = 0; windowEnd < arr.length; windowEnd++) {
+            windowSum += arr[windowEnd];
+
+        if(windowEnd >= k-1) {
+            maxSum = Math.max(maxSum, windowSum);
+            windowSum -= arr[windowStart];
+            windowStart++;
+        }
+      }
+        return maxSum;
     }
-  }
-  return maxSum
+
+    public static void main(String[] args) {
+        System.out.println(maxSubarrayOfSizeK(3, new int[]{2, 1, 5, 1, 3, 2})); // 9
+        System.out.println(maxSubarrayOfSizeK(2, new int[]{2, 3, 4, 1, 5}));    // 7
+    }
 }
 
-
-maxSubarrayOfSizeK([2, 1, 5, 1, 3, 2], 3)//9 
-maxSubarrayOfSizeK([2, 3, 4, 1, 5], 2)//7 
 ````
 - The time complexity of the above algorithm will be `O(N)`
 - The space complexity of the above algorithm will be `O(1)`
@@ -163,44 +191,35 @@ This problem follows the <b>Sliding Window pattern</b>, and we can use a similar
   - Subtract the first element of the window from the running sum to shrink the sliding window.
 
 
-````js
-function smallestSubarrayWithGivenSum(arr, s) {
-  //sliding window, BUT the window size is not fixed
-  let windowSum = 0
-  let minLength = Infinity
-  let windowStart = 0
-  
-  //First, we will add-up elements from the beginning of the array until their sum becomes greater than or equal to S.
-  for(windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    
-    //add the next element
-    windowSum += arr[windowEnd]
-    
-    //shrink the window as small as possible
-    //until windowSum is small than s
-    while(windowSum >= s) {
-      //These elements will constitute our sliding window. We are asked to find the smallest such window having a sum greater than or equal to S. We will remember the length of this window as the smallest window so far.
-      //After this, we will keep adding one element in the sliding window (i.e., slide the window ahead) in a stepwise fashion.
-      //In each step, we will also try to shrink the window from the beginning. We will shrink the window until the windows sum is smaller than S again. This is needed as we intend to find the smallest window. This shrinking will also happen in multiple steps; in each step, we will do two things:
-      //Check if the current window length is the smallest so far, and if so, remember its length.
-      minLength = Math.min(minLength, windowEnd - windowStart + 1)
-      
-      //Subtract the first element of the window from the running sum to shrink the sliding window.
-      windowSum -= arr[windowStart]
-      windowStart++
+![](./images/slidingWindow4.png)
+
+
+````java
+public class SmallestSubarrayWithGivenSum {
+
+    public static int smallestSubarrayWithGivenSum(int[] arr, int s) {
+        int windowSum = 0, minLength = Integer.MAX_VALUE;
+        int windowStart = 0;
+
+        for (int windowEnd = 0; windowEnd < arr.length; windowEnd++) {
+            windowSum += arr[windowEnd];
+
+            while (windowSum >= s) {
+                minLength = Math.min(minLength, windowEnd - windowStart + 1);
+                windowSum -= arr[windowStart];
+                windowStart++;
+            }
+        }
+
+        return minLength == Integer.MAX_VALUE ? 0 : minLength;
     }
-  } 
-  
-  if(minLength === Infinity) {
-    return 0
-  }
-  return minLength
-}
 
-
-smallestSubarrayWithGivenSum([2, 1, 5, 2, 3, 2], 7)//2
-smallestSubarrayWithGivenSum([2, 1, 5, 2, 8], 7)//1
-smallestSubarrayWithGivenSum([3, 4, 1, 1, 6], 8)//3
+    public static void main(String[] args) {
+        System.out.println(smallestSubarrayWithGivenSum(new int[]{2, 1, 5, 2, 3, 2}, 7)); // 2
+        System.out.println(smallestSubarrayWithGivenSum(new int[]{2, 1, 5, 2, 8}, 7));    // 1
+    }
+    
+}        
 
 ````
 - The time complexity of the above algorithm will be `O(N)`. The outer for loop runs for all elements, and the inner while loop processes each element only once; therefore, the time complexity of the algorithm will be `O(N+N)`), which is asymptotically equivalent to `O(N)`.
