@@ -303,83 +303,45 @@ This problem follows the <b>Sliding Window pattern</b> and is quite similar to <
 In this problem, we need to find the length of the longest subarray with no more than two distinct characters (or fruit types!). 
 
 This transforms the current problem into Longest Substring with <b>K Distinct Characters</b> where `K=2`.
-### Map Class Solution
-````js
-function totalFruit (fruits) {
-  let windowStart = 0
-  let windowMax = 0
-  let fruitMap = new Map()
+````java
+import java.util.HashMap;
+import java.util.Map;
 
-  
-  //1. try to extend the window range
-  for(let windowEnd = 0; windowEnd < fruits.length; windowEnd++) {
-    let endFruit = fruits[windowEnd]
-    
-    fruitMap.set(endFruit, fruitMap.get(endFruit)+1 || 1)
-    
-    
-    //2. Shrink the sliding window, until we are left with 2 fruits in the fruitMap
-    while(fruitMap.size > 2) {
-      let startFruit = fruits[windowStart]
-      
-      fruitMap.set(startFruit, fruitMap.get(startFruit)-1)
-      
-      
-      if(fruitMap.get(startFruit) === 0){
-        fruitMap.delete(startFruit)
-      }
-      windowStart++
+public class Fruits {
+
+    public static int fruitsInBaskets(char[] fruits) {
+        int windowStart = 0;
+        int maxLength = 0;
+        Map<Character, Integer> fruitFrequency = new HashMap<>();
+
+        // try to extend the range
+        for (int windowEnd = 0; windowEnd < fruits.length; windowEnd++) {
+            char endFruit = fruits[windowEnd];
+            fruitFrequency.put(endFruit, fruitFrequency.getOrDefault(endFruit, 0) + 1);
+
+            // shrink the sliding window until we are left with '2' fruits in the fruitFrequency map
+            while (fruitFrequency.size() > 2) {
+                char startFruit = fruits[windowStart];
+                fruitFrequency.put(startFruit, fruitFrequency.get(startFruit) - 1);
+
+                if (fruitFrequency.get(startFruit) == 0) {
+                    fruitFrequency.remove(startFruit);
+                }
+                windowStart++;
+            }
+
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        }
+
+        return maxLength;
     }
-    
-    windowMax = Math.max(windowMax, windowEnd - windowStart + 1)
-  }
-  
-  return windowMax   
-};
 
-totalFruit ([3,3,3,1,2,1,1,2,3,3,4])
-//5
-
-totalFruit ([1,2,1])
-//3,We can pick from all 3 trees.
-
-totalFruit ([0,1,2,2])
-//3,We can pick from trees [1,2,2].If we had started at the first tree, we would only pick from trees [0,1].
-
-totalFruit ([1,2,3,2,2])
-//4,We can pick from trees [2,3,2,2]. If we had started at the first tree, we would only pick from trees [1,2].
-````
-### Map Object Solution
-````js
-function fruitsInBaskets(fruits) {
-  let windowStart = 0; 
-  let maxLength = 0; 
-  let fruitFrequency = {};
-  
-  //try to extend the range
-  for(let windowEnd = 0; windowEnd < fruits.length; window++) {
-    const endFruit = fruits[windowEnd]
-    if(!(endFruit in fruitFrequency)) {
-      fruitFrequency[endFruit] = 0
+    public static void main(String[] args) {
+        System.out.println(fruitsInBaskets(new char[]{'A', 'B', 'C', 'A', 'C'})); // 3
+        System.out.println(fruitsInBaskets(new char[]{'A', 'B', 'C', 'B', 'B', 'C'})); // 5
     }
-    fruitFrequency[endFruit]++
-    
-    //shrink the sliding window, until we are left with '2' fruits in the fruitFrequency hashMap
-    while(Object.keys(fruitFrequency).length > 2) {
-      const startFruit = fruits[windowStart];
-      fruitFrequency[startFruit]--
-      if(fruitFrequency[startFruit] === 0) {
-        delete fruitFrequency[startFruit]
-      }
-      windowStart++
-    }
-    maxLength = Math.max(maxLength, windowEnd - windowStart + 1)
-  }
-  return maxLength
 }
 
-fruitsInBaskets(['A', 'B', 'C', 'A', 'C'])//3 , We can put 2 'C' in one basket and one 'A' in the other from the subarray ['C', 'A', 'C']
-fruitsInBaskets(['A', 'B', 'C', 'B', 'B', 'C'])//5 , We can put 3 'B' in one basket and two 'C' in the other basket. This can be done if we start with the second letter: ['B', 'C', 'B', 'B', 'C']
 ````
 - The above algorithms time complexity will be `O(N)`, where `N` is the number of characters in the input array. The outer `for` loop runs for all characters, and the inner `while` loop processes each character only once; therefore, the time complexity of the algorithm will be `O(N+N)`, which is asymptotically equivalent to `O(N)`.
 - The algorithm runs in constant space `O(1)` as there can be a maximum of three types of fruits stored in the frequency map.
@@ -387,40 +349,48 @@ fruitsInBaskets(['A', 'B', 'C', 'B', 'B', 'C'])//5 , We can put 3 'B' in one bas
 https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/
 > Given a string, find the length of the longest substring in it with at most two distinct characters.
 
-````js
-function lengthOfLongestSubstringTwoDistinct(s) {
-    let windowStart = 0
-    let maxLength = 0
-    let charFreq = {}
-  
-    //try to extend the range
-    for(let windowEnd = 0; windowEnd < s.length; windowEnd++) {
-        const endChar = s[windowEnd]
-        
-        if(!(endChar in charFreq)) {
-            charFreq[endChar] = 0
-        }
-        charFreq[endChar]++
-      
-      //shrink the sliding window, until we are left
-      //with 2 chars in charFreq hashMap
-      
-      while(Object.keys(charFreq).length > 2) {
-        const startChar = s[windowStart]
-        charFreq[startChar]--
-        if(charFreq[startChar] === 0) {
-          delete charFreq[startChar]
-        }
-        windowStart++
-      }
-      maxLength = Math.max(maxLength, windowEnd - windowStart + 1)
-    }
-    
-    return maxLength
-};
+````java
+import java.util.HashMap;
+import java.util.Map;
 
-lengthOfLongestSubstringTwoDistinct('eceba')//3
-lengthOfLongestSubstringTwoDistinct('ccaabbb')//5
+public class LongestSubstringTwoDistinct {
+
+    public static int lengthOfLongestSubstringTwoDistinct(String s) {
+        int windowStart = 0;
+        int maxLength = 0;
+        Map<Character, Integer> charFreq = new HashMap<>();
+
+        // try to extend the range
+        for (int windowEnd = 0; windowEnd < s.length(); windowEnd++) {
+            char endChar = s.charAt(windowEnd);
+
+            charFreq.put(endChar, charFreq.getOrDefault(endChar, 0) + 1);
+
+            // shrink the sliding window until we are left
+            // with 2 chars in charFreq map
+
+            while (charFreq.size() > 2) {
+                char startChar = s.charAt(windowStart);
+                charFreq.put(startChar, charFreq.get(startChar) - 1);
+
+                if (charFreq.get(startChar) == 0) {
+                    charFreq.remove(startChar);
+                }
+                windowStart++;
+            }
+
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        }
+
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstringTwoDistinct("eceba")); // 3
+        System.out.println(lengthOfLongestSubstringTwoDistinct("ccaabbb")); // 5
+    }
+}
+
 ````
 
 
@@ -433,43 +403,49 @@ https://leetcode.com/problems/longest-substring-without-repeating-characters/
 
 This problem follows the <b>Sliding Window pattern</b>, and we can use a similar dynamic <i>sliding window</i> strategy as discussed in <b>Longest Substring with K Distinct Characters</b>. We can use a <b>HashMap</b> to remember the last index of each character we have processed. Whenever we get a repeating character, we will shrink our <i>sliding window</i> to ensure that we always have distinct characters in the <i>sliding window</i>.
 
-````js
-function nonRepeatSubstring(str) {
-  // sliding window with hashmap
-  
-  let windowStart = 0
-  let maxLength = 0
-  let charIndexMap = {}
-  
-  //try to extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    
-    //if the map already contains the endChar, 
-    //shrink the window from the beginning 
-    //so that we only have on occurance of endChar
-    if(endChar in charIndexMap) {
-    
-      //this is tricky; in the current window, 
-      //we will not have any endChar after
-      //it's previous index. and if windowStart
-      //is already ahead of the last index of
-      //endChar, we'll keep windowStart
-      windowStart = Math.max(windowStart, charIndexMap[endChar] + 1)
-    }
-    
-    //insert the endChar into the map
-    charIndexMap[endChar] = windowEnd
-    
-    //remember the maximum length so far
-    maxLength = Math.max(maxLength, windowEnd - windowStart+1)
-  } 
-  return maxLength
-};
+````java
+import java.util.HashMap;
+import java.util.Map;
 
-nonRepeatSubstring("aabccbb")//3
-nonRepeatSubstring("abbbb")//2
-nonRepeatSubstring("abccde")//3
+public class NonRepeatSubstring {
+
+    public static int nonRepeatSubstring(String str) {
+        int windowStart = 0;
+        int maxLength = 0;
+        Map<Character, Integer> charIndexMap = new HashMap<>();
+        
+        // try to extend the range [windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char endChar = str.charAt(windowEnd);
+            
+            // if the map already contains the endChar, 
+            // shrink the window from the beginning 
+            // so that we only have one occurrence of endChar
+            if (charIndexMap.containsKey(endChar)) {
+                // this is tricky; in the current window, 
+                // we will not have any endChar after
+                // its previous index. and if windowStart
+                // is already ahead of the last index of
+                // endChar, we'll keep windowStart
+                windowStart = Math.max(windowStart, charIndexMap.get(endChar) + 1);
+            }
+            
+            // insert the endChar into the map
+            charIndexMap.put(endChar, windowEnd);
+            
+            // remember the maximum length so far
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        } 
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(nonRepeatSubstring("aabccbb")); // 3
+        System.out.println(nonRepeatSubstring("abbbb"));   // 2
+        System.out.println(nonRepeatSubstring("abccde"));  // 3
+    }
+}
+
 ````
 - The above algorithms time complexity will be `O(N)`, where `N` is the number of characters in the input string.
 - The algorithms space complexity will be `O(K)`, where `K` is the number of distinct characters in the input string. This also means `K<=N`, because in the worst case, the whole string might not have any repeating character, so the entire string will be added to the <b>HashMap</b>. Having said that, since we can expect a fixed set of characters in the input string (e.g., 26 for English letters), we can say that the algorithm runs in fixed space `O(1)`; in this case, we can use a fixed-size array instead of the <b>HashMap</b>.
@@ -488,41 +464,49 @@ This problem follows the <b>Sliding Window pattern</b>, and we can use a similar
   - If we have more than `K` remaining letters, we should shrink the window as we cannot replace more than `K` letters.
 
 While shrinking the window, we dont need to update `maxRepeatLetterCount` (hence, it represents the maximum repeating count of ANY letter for ANY window). Why dont we need to update this count when we shrink the window? Since we have to replace all the remaining letters to get the longest substring having the same letter in any window, we cant get a better answer from any other window even though all occurrences of the letter with frequency `maxRepeatLetterCount` is not in the current window.
-````js
-function lengthOfLongestSubstring(str, k) {
-  let windowStart = 0
-  let maxLength = 0
-  let maxRepeatLetterCount = 0
-  let charFrequency = {}
-  
-  //Try to extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    if(!(endChar in charFrequency)) {
-      charFrequency[endChar] = 0
+````java
+import java.util.HashMap;
+import java.util.Map;
+
+public class LongestSubstring {
+
+    public static int lengthOfLongestSubstring(String str, int k) {
+        int windowStart = 0;
+        int maxLength = 0;
+        int maxRepeatLetterCount = 0;
+        Map<Character, Integer> charFrequency = new HashMap<>();
+
+        // Try to extend the range [windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char endChar = str.charAt(windowEnd);
+
+            charFrequency.put(endChar, charFrequency.getOrDefault(endChar, 0) + 1);
+            maxRepeatLetterCount = Math.max(maxRepeatLetterCount, charFrequency.get(endChar));
+
+            // Current window size is from windowStart to windowEnd.
+            // Overall we have a letter which is repeating maxRepeatLetterCount times.
+            // This means we can have a window which has one letter repeating maxRepeatLetterCount times,
+            // and the remaining letters we should replace.
+            // If the remaining letters are more than k, it is the time to shrink the window,
+            // as we are not allowed to replace more than k letters.
+            if ((windowEnd - windowStart + 1 - maxRepeatLetterCount) > k) {
+                char startChar = str.charAt(windowStart);
+                charFrequency.put(startChar, charFrequency.get(startChar) - 1);
+                windowStart++;
+            }
+
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        }
+        return maxLength;
     }
-    charFrequency[endChar]++
-    //*REVIEW THIS LINE*
-    maxRepeatLetterCount = Math.max(maxRepeatLetterCount, charFrequency[endChar])
-    
-    //current window size is from windowStart to windowEnd, overall we have a letter which is
-    //repeating maxRepeatLetterCount times, this mean we can have a window which has one letter
-    //repeating maxRepeatLetterCount times and the remaining letters we should replace
-    //if the remaining letters are more than k, it is the time to shrink the window as we
-    //are not allowed to replace more than k letters
-    if((windowEnd - windowStart + 1 - maxRepeatLetterCount) > k) {
-      const startChar = str[windowStart]
-      charFrequency[startChar]--
-      windowStart++
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring("aabccbb", 2)); // 5
+        System.out.println(lengthOfLongestSubstring("abbcb", 1));   // 4
+        System.out.println(lengthOfLongestSubstring("abccde", 1));  // 3
     }
-    maxLength = Math.max(maxLength, windowEnd - windowStart + 1)
-  }
-  return maxLength
 }
 
-lengthOfLongestSubstring("aabccbb", 2)//5, Replace the two 'c' with 'b' to have a longest repeating substring "bbbbb".
-lengthOfLongestSubstring("abbcb", 1)//4, Replace the 'c' with 'b' to have a longest repeating substring "bbbb".
-lengthOfLongestSubstring("abccde", 1)//3, Replace the 'b' or 'd' with 'c' to have the longest repeating substring "ccc".
 ````
 
 - The above algorithms time complexity will be `O(N)`, where `N` is the number of letters in the input string.
