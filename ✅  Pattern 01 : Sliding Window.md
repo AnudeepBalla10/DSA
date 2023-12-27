@@ -522,38 +522,45 @@ This problem follows the <b>Sliding Window pattern</b> and is quite similar to <
 
 Following a similar approach, well iterate through the array to add one number at a time in the window. Well also keep track of the maximum number of repeating `1`'s in the current window (lets call it `maxOnesCount`). So at any time, we know that we can have a window with `1`'s repeating `maxOnesCount` time, so we should try to replace the remaining `0`'s. If we have more than `K` remaining `0`'s, we should shrink the window as we are not allowed to replace more than `K` `0`'s.
 
-````js
-function lengthOfLongestSubstring (arr, k) {
-  let windowStart = 0
-  let maxLength = 0
-  let maxOnesCount = 0
-  
-  //Try to extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < arr.length; windowEnd++) {
-    if(arr[windowEnd] === 1) {
-      maxOnesCount++
+````java
+public class LongestSubstring {
+
+    public static int lengthOfLongestSubstring(int[] arr, int k) {
+        int windowStart = 0;
+        int maxLength = 0;
+        int maxOnesCount = 0;
+
+        // Try to extend the range [windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < arr.length; windowEnd++) {
+            if (arr[windowEnd] == 1) {
+                maxOnesCount++;
+            }
+
+            // Current window size is from windowStart to windowEnd.
+            // Overall, we have a maximum of `1`'s repeating maxOnesCount times.
+            // This means we can have a window with maxOnesCount `1`'s,
+            // and the remaining are `0`'s which should be replaced with `1`'s.
+            // If the remaining `0`'s are more than k, it is time to shrink the window,
+            // as we are not allowed to replace more than k `0`'s.
+            if ((windowEnd - windowStart + 1 - maxOnesCount) > k) {
+                if (arr[windowStart] == 1) {
+                    maxOnesCount--;
+                }
+                windowStart++;
+            }
+
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        }
+
+        return maxLength;
     }
-    
-    //current window size is from windowStart to windowEnd, overall we have a 
-    //maximum of `1`'s repeating maxOnesCount times, this means we can have a window 
-    //with maxOnesCount `1`'s and the remaining are `0`'s which should replace with `1`'s
-    //now, if the remaining `0`'s are more that k, it is the time to shrink the 
-    //window as we are not allowed to replace more than k `0`'s
-    if((windowEnd - windowStart + 1 - maxOnesCount) > k) {
-      if(arr[windowStart] === 1) {
-        maxOnesCount--
-      }
-      windowStart++
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring(new int[]{0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1}, 2)); // 6
+        System.out.println(lengthOfLongestSubstring(new int[]{0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1}, 3)); // 9
     }
-    
-    maxLength = Math.max(maxLength, windowEnd - windowStart + 1)
-  }
-  
-  return maxLength  
 }
 
-lengthOfLongestSubstring ([0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1], 2)//6, Replace the '0' at index 5 and 8 to have the longest contiguous subarray of `1`'s having length 6.
-lengthOfLongestSubstring ([0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1], 3)//9, Replace the '0' at index 6, 9, and 10 to have the longest contiguous subarray of `1`'s having length 9.
 ````
 - The above algorithms time complexity will be `O(N)`, where `N` is the count of numbers in the input array.
 - The algorithm runs in constant space `O(1)`.
@@ -573,62 +580,70 @@ https://leetcode.com/problems/permutation-in-string/
 
 If a string has `n` distinct characters, it will have `n!` permutations.
 
-This problem follows the <b>Sliding Window pattern</b>, and we can use a similar <i>sliding window</i> strategy as discussed in <b>[Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters-medium)</b>. We can use a <b>HashMap</b> to remember the frequencies of all characters in the given pattern. Our goal will be to match all the characters from this <b>HashMap</b> with a<i>sliding window</i>in the given string. Here are the steps of our algorithm:
+This problem follows the <b>Sliding Window pattern</b>, and we can use a similar <i>sliding window</i> strategy as discussed in <b>[Longest Substring with K Distinct Characters](#longest-substring-with-k-distinct-characters-medium)</b>. We can use a <b>HashMap</b> to remember the frequencies of all characters in the given pattern. Our goal will be to match all the characters from this <b>HashMap</b> with a <i>sliding window</i> in the given string. Here are the steps of our algorithm:
 - Create a <b>HashMap</b> to calculate the frequencies of all characters in the pattern.
 - Iterate through the string, adding one character at a time in the <i>sliding window</i>.
 - If the character being added matches a character in the <b>HashMap</b>, decrement its frequency in the map. If the character frequency becomes zero, we got a complete match.
 - If at any time, the number of characters matched is equal to the number of distinct characters in the pattern (i.e., total characters in the <b>HashMap</b>), we have gotten our required permutation.
 - If the window size is greater than the length of the pattern, shrink the window to make it equal to the patterns size. At the same time, if the character going out was part of the pattern, put it back in the frequency <b>HashMap</b>.
 
-````js
-function findPermutation(str, pattern) {
-  //sliding window
-  let windowStart = 0
-  let isMatch = 0
-  let charFrequency = {}
-  
- for(i = 0; i < pattern.length; i++) {
-   const char = pattern[i]
-   if(!(char in charFrequency)) {
-     charFrequency[char] = 0
-   }
-   charFrequency[char]++
- }
-  
-  //our goal is to math all the characters from charFrequency with the current window
-  //try to extend the range [windowStart, windowEnd]
-  for(windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    if(endChar in charFrequency) {
-      //decrement the frequency of the matched character
-      charFrequency[endChar]--
-      if(charFrequency[endChar] === 0) {
-        isMatch++
-      }
-    }
-    if(isMatch === Object.keys(charFrequency).length) {
-      return true
-    }
-    
-    //shrink the sliding window
-    if(windowEnd >= pattern.length - 1) {
-      let startChar = str[windowStart]
-      windowStart++
-      if(startChar in charFrequency) {
-        if(charFrequency[startChar] === 0) {
-          isMatch--
+````java
+import java.util.HashMap;
+import java.util.Map;
+
+public class StringAnagrams {
+
+    public static boolean findStringAnagrams(String str, String pattern) {
+        int windowStart = 0, matched = 0;
+        Map<Character, Integer> charFreq = new HashMap<>();
+
+        for (char c : pattern.toCharArray()) {
+            charFreq.put(c, charFreq.getOrDefault(c, 0) + 1);
         }
-        charFrequency[startChar]++
-      }
+
+        // Our goal is to match all the characters from charFreq
+        // with the current window, try to extend the range [windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char rightChar = str.charAt(windowEnd);
+
+            if (charFreq.containsKey(rightChar)) {
+                // Decrement the frequency of the matched character
+                charFreq.put(rightChar, charFreq.get(rightChar) - 1);
+                // if the Character was already in the Map and we reduce it then we end up with 0;
+                if (charFreq.get(rightChar) == 0) {
+                    matched++;
+                }
+            }
+
+            if (matched == charFreq.size()) {
+                return true;
+            }
+
+            // Shrink the sliding window
+            if (windowEnd >= pattern.length() - 1) {
+                char leftChar = str.charAt(windowStart++);
+
+                if (charFreq.containsKey(leftChar)) {
+                    if (charFreq.get(leftChar) == 0) {
+                        // Before putting the character back,
+                        // decrement the matched count
+                        matched--;
+                    }
+                    // Put the character back
+                    charFreq.put(leftChar, charFreq.get(leftChar) + 1);
+                }
+            }
+        }
+
+        return false;
     }
-  }
-  return false
+
+    public static void main(String[] args) {
+        System.out.println(findStringAnagrams("ppqp", "pq"));        // true
+        System.out.println(findStringAnagrams("abbcabc", "abc"));    // true
+    }
 }
 
-findPermutation("oidbcaf", "abc")//true, The string contains "bca" which is a permutation of the given pattern.
-findPermutation("odicf", "dc")//false
-findPermutation("bcdxabcdy", "bcdxabcdy")//true
-findPermutation("aaacb", "abc")//true, The string contains "acb" which is a permutation of the given pattern.
 ````
 
 - The above algorithms time complexity will be `O(N + M)`, where `N` and `M` are the number of characters in the input string and the pattern, respectively.
@@ -652,58 +667,68 @@ As we know, when we are not allowed to repeat characters while finding permutati
 > Write a function to return a list of starting indices of the anagrams of the pattern in the given string.
 
 This problem follows the <b>Sliding Window pattern</b> and is very similar to <b>Permutation in a String</b>. In this problem, we need to find every occurrence of any permutation of the pattern in the string. We will use a list to store the starting indices of the anagrams of the pattern in the string.
-````js
-function findStringAnagrams(str, pattern){
-  let windowStart = 0, matched = 0, charFreq = {}
-  
-  for(let i = 0; i < pattern.length; i++){
-    const char = pattern[i]
-    if(!(char in charFreq)) {
-      charFreq[char] = 0
-    }
-    charFreq[char]++
-  }
-  const resultIndex = []
-  
-  //our goal is to match all the characters from the charFreq
-  //with the current window try to 
-  //extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    if(endChar in charFreq) {
-      //decrement the frequency of matched character
-      charFreq[endChar]--
-      if(charFreq[endChar] === 0) {
-        matched++
-      }
-    }
-    
-    if(matched === Object.keys(charFreq).length){
-      //have we found an anagram
-      resultIndex.push(windowStart)
-    }
-    
-    //shrink the sliding window
-    if(windowEnd >= pattern.length -1) {
-      const startChar = str[windowStart]
-      windowStart++
-      if(endChar in charFreq) {
-        if(charFreq[startChar] === 0) {
-          //before putting the character back
-          //decrement the matched count
-          matched--
+````java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class StringAnagrams {
+
+    public static List<Integer> findStringAnagrams(String str, String pattern) {
+        int windowStart = 0, matched = 0;
+        Map<Character, Integer> charFreq = new HashMap<>();
+
+        for (char c : pattern.toCharArray()) {
+            charFreq.put(c, charFreq.getOrDefault(c, 0) + 1);
         }
-        //put the character back
-        charFreq[startChar]++
-      }
+
+        List<Integer> resultIndex = new ArrayList<>();
+
+        // Our goal is to match all the characters from charFreq
+        // with the current window, try to extend the range [windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char endChar = str.charAt(windowEnd);
+
+            if (charFreq.containsKey(endChar)) {
+                // Decrement the frequency of matched character
+                charFreq.put(endChar, charFreq.get(endChar) - 1);
+                if (charFreq.get(endChar) == 0) {
+                    matched++;
+                }
+            }
+
+            if (matched == charFreq.size()) {
+                // Have we found an anagram
+                resultIndex.add(windowStart);
+            }
+
+            // Shrink the sliding window
+            if (windowEnd >= pattern.length() - 1) {
+                char startChar = str.charAt(windowStart);
+                windowStart++;
+
+                if (charFreq.containsKey(startChar)) {
+                    if (charFreq.get(startChar) == 0) {
+                        // Before putting the character back,
+                        // decrement the matched count
+                        matched--;
+                    }
+                    // Put the character back
+                    charFreq.put(startChar, charFreq.get(startChar) + 1);
+                }
+            }
+        }
+
+        return resultIndex;
     }
-  }
-  
-  return resultIndex
+
+    public static void main(String[] args) {
+        System.out.println(findStringAnagrams("ppqp", "pq"));        // [1, 2]
+        System.out.println(findStringAnagrams("abbcabc", "abc"));    // [2, 3, 4]
+    }
 }
 
-findStringAnagrams('ppqp', 'pq')//[1,2], The two anagrams of the pattern in the given string are "pq" and "qp".
-findStringAnagrams('abbcabc', 'abc')//[2,3,4], The three anagrams of the pattern in the given string are "bca", "cab", and "abc".
 ````
 
 - The time complexity of the above algorithm will be `O(N + M)` where `N` and `M` are the number of characters in the input string and the pattern respectively.
@@ -719,61 +744,63 @@ This problem follows the <b>Sliding Window pattern</b> and has a lot of similari
 2. Whenever we have matched all the characters, we will try to shrink the window from the beginning, keeping track of the smallest substring that has all the matching characters.
 3. We will stop the shrinking process as soon as we remove a matched character from the <i>sliding window</i>. One thing to note here is that we could have redundant matching characters, e.g., we might have two a in the <i>sliding window</i> when we only need one a. In that case, when we encounter the first a, we will simply shrink the window without decrementing the matched count. We will decrement the matched count when the second a goes out of the window.
 
-````js
-function findSubstring(str, pattern) {
-  let windowStart = 0
-  let matched = 0
-  let substrStart = 0
-  let minLength = str.length + 1
-  let charFreq = {}
-  
-  for(let i = 0; i < pattern.length; i++) {
-    const char = pattern[i]
-    if(!(char in charFreq)) {
-      charFreq[char] = 0
-    }
-    charFreq[char]++
-  }
-  
-  //try to extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    if(endChar in charFreq) {
-      charFreq[endChar]--
-      if(charFreq[endChar] >= 0) {
-        //count every matching of a character
-        matched++
-      }
-    }
-    
-    //Shrink the window if we can, finish as soon as we remove a 
-    //matched character
-    while(matched === pattern.length) {
-      if(minLength > windowEnd - windowStart + 1) {
-        minLength = windowEnd - windowStart + 1
-        substrStart = windowStart
-      }
-      
-      const startChar = str[windowStart]
-      windowStart++
-      if(startChar in charFreq) {
-        if(charFreq[startChar] === 0) {
-        matched--
-      }
-      charFreq[startChar]++
+````java
+import java.util.HashMap;
+import java.util.Map;
+
+public class SubstringFinder {
+
+    public static String findSubstring(String str, String pattern) {
+        int windowStart = 0, matched = 0, substrStart = 0, minLength = str.length() + 1;
+        Map<Character, Integer> charFreq = new HashMap<>();
+
+        for (char c: pattern.toCharArray() ) {
+            charFreq.put(c, charFreq.getOrDefault(c, 0) + 1);
+        }
         
-      }
+        //trying to extend range from[windowStart, windowEnd]
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char rightChar = str.charAt(windowEnd);
+
+            if (charFreq.containsKey(rightChar)) {
+                charFreq.put(rightChar, charFreq.get(rightChar) - 1);
+                if (charFreq.get(rightChar) >= 0) {
+                    matched++;
+                }
+            }
+
+            while (matched == pattern.length()) {
+                if (minLength > windowEnd - windowStart + 1) {
+                    minLength = windowEnd - windowStart + 1;
+                    substrStart = windowStart;
+                }
+
+                char leftChar = str.charAt(windowStart);
+                windowStart++;
+
+                if (charFreq.containsKey(leftChar)) {
+                    if (charFreq.get(leftChar) == 0) {
+                        matched--;
+                    }
+                    charFreq.put(leftChar, charFreq.get(leftChar) + 1);
+                }
+            }
+        }
+
+        if (minLength > str.length()) {
+            return "";
+        }
+
+        return str.substring(substrStart, substrStart + minLength);
     }
-  } 
-  if(minLength > str.length) {
-  return ''
-}
-return str.substring(substrStart, substrStart + minLength)
+
+    public static void main(String[] args) {
+        System.out.println(findSubstring("aabdec", "abc"));  // "abdec"
+        System.out.println(findSubstring("abdbca", "abc"));  // "bca"
+        System.out.println(findSubstring("adcad", "abc"));   // ""
+    }
 }
 
-findSubstring("aabdec", "abc")//"abdec", The smallest substring having all characters of the pattern is "abdec"
-findSubstring("abdbca", "abc")//"bca", The smallest substring having all characters of the pattern is "bca".
-findSubstring("adcad", "abc")//"", No substring in the given string has all characters of the pattern.
 ````
 
 - The time complexity of the above algorithm will be `O(N + M)` where `N` and `M` are the number of characters in the input string and the pattern respectively.
@@ -781,7 +808,7 @@ findSubstring("adcad", "abc")//"", No substring in the given string has all char
 ## 🌟 Words Concatenation (hard)
 https://leetcode.com/problems/substring-with-concatenation-of-all-words/
 
-Given a string and a list of `words`, find all the starting indices of substrings in the given string that are a <b>concatenation of all the given `words`</b> exactly once without any <b>overlapping of `words`</b>. It is given that all `words` are of the same length.
+>Given a string and a list of `words`, find all the starting indices of substrings in the given string that are a <b>concatenation of all the given `words`</b> exactly once without any <b>overlapping of `words`</b>. It is given that all `words` are of the same length.
 
 This problem follows the <b>Sliding Window pattern</b> and has a lot of similarities with <b>[Maximum Sum Subarray of Size K](#maximum-sum-subarray-of-size-k-easy)</b>. We will keep track of all the `words` in a <b>HashMap</b> and try to match them in the given string. Here are the set of steps for our algorithm:
 1. Keep the frequency of every word in a <b>HashMap</b>.
@@ -790,59 +817,63 @@ This problem follows the <b>Sliding Window pattern</b> and has a lot of similari
 4. If a word is not found or has a higher frequency than required, we can move on to the next character in the string.
 5. Store the index if we have found all the `words`.
 
-````js
-function findWordConcatenation(str, words) {
-  if(words.length === 0 || words[0].length === 0) {
-    return []
-  }
-  
-  let wordFreq = {}
-  
-  words.forEach((word) => {
-    if(!(word in wordFreq)) {
-      wordFreq[word] = 0
-    }
-    wordFreq[word]++
-  })
-  
-  const resultIndex = []
-  let wordCount = words.length
-  let wordLength = words[0].length
+````java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-  for(let i = 0; i < (str.length - wordCount * wordLength) + 1; i++) {
-    const wordsSeen = {}
-    for(let j = 0; j < wordCount; j++) {
-      let nextWordIndex = i + j * wordLength
-      //get the next word from the string
-      const word = str.substring(nextWordIndex, nextWordIndex + wordLength)
-      if(!(word in wordFreq)){
-        //break if we don't need this word
-        break
-      }
-      
-      //add the word ot the wordsSeen ma
-      if(!(word in wordsSeen)){
-        wordsSeen[word] = 0
-      }
-      wordsSeen[word]++
-      
-      //no need to process furrther if the word
-      //has higher frequency than required
-      if(wordsSeen[word] > (wordFreq[word] || 0)){
-        break
-      }
-      
-      if(j + 1 === wordCount){
-        //store index if we have found all the words
-        resultIndex.push(i)
-      }
+public class WordConcatenationFinder {
+
+    public static List<Integer> findWordConcatenation(String str, String[] words) {
+        if (words.length == 0 || words[0].length() == 0) {
+            return new ArrayList<>();
+        }
+
+        Map<String, Integer> wordFreq = new HashMap<>();
+
+        for (String word : words) {
+            wordFreq.put(word, wordFreq.getOrDefault(word, 0) + 1);
+        }
+
+        List<Integer> resultIndex = new ArrayList<>();
+        int wordCount = words.length, wordLength = words[0].length();
+
+        for (int i = 0; i <= (str.length() - wordCount * wordLength); i++) {
+            Map<String, Integer> wordsSeen = new HashMap<>();
+            for (int j = 0; j < wordCount; j++) {
+                int nextWordIndex = i + j * wordLength;
+                // get the next word from the string
+                String word = str.substring(nextWordIndex, nextWordIndex + wordLength);
+                if (!wordFreq.containsKey(word)) {
+                    // break if we don't need this word
+                    break;
+                }
+
+                // add the word to the wordsSeen map
+                wordsSeen.put(word, wordsSeen.getOrDefault(word, 0) + 1);
+
+                // no need to process further if the word
+                // has a higher frequency than required
+                if (wordsSeen.get(word) > (wordFreq.getOrDefault(word, 0))) {
+                    break;
+                }
+
+                if (j + 1 == wordCount) {
+                    // store index if we have found all the words
+                    resultIndex.add(i);
+                }
+            }
+        }
+        return resultIndex;
     }
-  }
-  return resultIndex
+
+    public static void main(String[] args) {
+        System.out.println(findWordConcatenation("catfoxcat", new String[]{"cat", "fox"}));  // [0, 3]
+        System.out.println(findWordConcatenation("catcatfoxfox", new String[]{"cat", "fox"}));  // [3]
+    }
 }
 
-findWordConcatenation("catfoxcat", ["cat", "fox"])//[0, 3], The two substring containing both the words are "catfox" & "foxcat".
-findWordConcatenation("catcatfoxfox", ["cat", "fox"])//[3], The only substring containing both the words is "catfox".
 ````
 - The time complexity of the above algorithm will be `O(N * M * Len)` where `N` is the number of characters in the given string, `M` is the total number of `words`, and `Len` is the length of a word.
 - The space complexity of the algorithm is `O(M)` since at most, we will be storing all the `words` in the two <b>HashMaps</b>. In the worst case, we also need `O(N)` space for the resulting list. So, the overall space complexity of the algorithm will be `O(M+N)`.
