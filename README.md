@@ -1,6 +1,6 @@
 # Several Coding Patterns for Solving Data Structures and Algorithms Problems during Interviews
 
-These are my notes in <b>Javascript</b> from a [course](https://www.educative.io/courses/grokking-the-coding-interview) that categorizes coding interview problems into a set of <b>16 patterns</b>. 
+These are my notes in <b>Java</b> from a [course](https://www.educative.io/courses/grokking-the-coding-interview) that categorizes coding interview problems into a set of <b>16 patterns</b>. 
 
 |   |   |
 |---|---|
@@ -16,16 +16,13 @@ These are my notes in <b>Javascript</b> from a [course](https://www.educative.io
 ## Additional Resources
 Here are a few other resources that I found helpful when learning <b>Data Structures and Algorithms</b> using <b>JavaScript</b>
 
-- [Run JS](https://runjs.app/) - A JavaScript playground
-for your desktop
 - [Big O CheatSheet](https://www.bigocheatsheet.com/) - Reference for <b>Big-O</b> complexities of common algorithms
 - [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) - For additional practice, the [Blind75 list](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) of interview questions is 🔥.  I would approach the questions in [this order](https://www.techinterviewhandbook.org/best-practice-questions) or [this order](https://neetcode.io/) or [create a custom Blind75 study plan](https://www.techinterviewhandbook.org/grind75)
-- [Edabit](https://edabit.com/) is a great resource if you need additional <b>Javascript</b> practice before you start using <b>leetcode</b>.
+
 - [LeetCode](https://leetcode.com/problemset/all/) of course
 😋
 - [Pramp](https://www.pramp.com/) - for mock interviews
 - [FreeCodeCamp's Algorithms](https://www.freecodecamp.org/learn/coding-interview-prep/#algorithms) - Extra practice, esp. the <b>Sort Algorithms</b> section.
-- [Build 15 JavaScript Projects - Vanilla JavaScript Course](https://www.youtube.com/watch?v=3PHXvlpOkf4) - for extra <b>Vanilla JavaScript/DOM Manipulation</b> practice.
 # 
 #### 🌟 Challenge Questions
 
