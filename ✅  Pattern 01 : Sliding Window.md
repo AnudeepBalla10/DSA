@@ -241,45 +241,50 @@ This problem follows the <b>Sliding Window pattern</b>, and we can use a similar
 5. While shrinking, well decrement the characters frequency going out of the window and remove it from the <b>HashMap</b> if its frequency becomes zero.
 6. At the end of each step, well check if the current window length is the longest so far, and if so, remember its length.
 
-````js
-function longestSubstringWithKdistinct(str, k) {
-   // Given a string, find the length of the longest substring in it with no more than K distinct characters.
-  let windowStart = 0
-  let maxLength = 0
-  let charFrequency = {}
 
-  //in the following loop we'll try to extend the range [windowStart, windowEnd]
-  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const endChar = str[windowEnd]
-    if(!(endChar in charFrequency)) {
-      charFrequency[endChar] = 0
-    }
-    charFrequency[endChar]++
-    //shrink the window until we are left with k distinct characters 
-    //in the charFrequency Object
-    
-    while(Object.keys(charFrequency).length > k) {
-      //insert characters from the beginning of the string until we have 'K' distinct characters in the hashMap 
-    //these characters will consitutue our sliding window.  We are asked to find the longest such window having no more that K distinct characters.  We will remember the length of the window as the longest window so far
-    //we will keep adding on character in the sliding window in a stepwise fashion
-      //in each step we will try to shrink the window from the beginning if the count of distinct characters in the hashmap is larger than K. We will shrink the window until we have no more that K distinct characters in the HashMap
-      const startChar = str[windowStart]
-      charFrequency[startChar]--
-      //while shrinking , we will decrement the characters frequency going out of the window and remove it from the HashMap if it's frequency becomes zero
-      if(charFrequency[startChar] === 0) {
-        delete charFrequency[startChar]
-      }
-      windowStart++
-    }
-    //after each step we will check if the current window length is the longest so far, and if so, remember it's length
-    maxLength = Math.max(maxLength, windowEnd - windowStart + 1)
-  }
-    return maxLength
-};
+![](./images/slidingWindow5.png)
 
-longestSubstringWithKdistinct("araaci", 2)//4, The longest substring with no more than '2' distinct characters is "araa".
-longestSubstringWithKdistinct("araaci", 1)//2, The longest substring with no more than '1' distinct characters is "aa".
-longestSubstringWithKdistinct("cbbebi", 3)//5, The longest substrings with no more than '3' distinct characters are "cbbeb" & "bbebi".
+````java
+import java.util.HashMap;
+import java.util.Map;
+
+public class LongestSubstringWithKDistinct {
+
+    public static int longestSubstringWithKDistinct(String str, int k) {
+        if(str == null || str.length() == 0 || str.length() < k) return 0;
+        
+        int windowStart = 0, maxLength = 0;
+        Map<Character, Integer> charFrequency = new HashMap<>();
+
+        for (int windowEnd = 0; windowEnd < str.length(); windowEnd++) {
+            char rightChar = str.charAt(windowEnd);
+
+            charFrequency.put(rightChar, charFrequency.getOrDefault(rightChar, 0) + 1);
+
+            while (charFrequency.size() > k) {
+                char leftChar = str.charAt(windowStart);
+                charFrequency.put(leftChar, charFrequency.get(leftChar) - 1);
+
+                if (charFrequency.get(leftChar) == 0) {
+                    charFrequency.remove(leftChar);
+                }
+
+                windowStart++;
+            }
+
+            maxLength = Math.max(maxLength, windowEnd - windowStart + 1);
+        }
+
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(longestSubstringWithKDistinct("araaci", 2)); // 4
+        System.out.println(longestSubstringWithKDistinct("araaci", 1)); // 2
+        System.out.println(longestSubstringWithKDistinct("cbbebi", 3)); // 5
+    }
+}
+
 ````
 - The above algorithms time complexity will be `O(N)`, where `N` is the number of characters in the input string. The outer for loop runs for all characters, and the inner while loop processes each character only once; therefore, the time complexity of the algorithm will be `O(N+N)`, which is asymptotically equivalent to `O(N)`
 - The algorithms space complexity is `O(K)`, as we will be storing a maximum of `K+1` characters in the <b>HashMap</b>.
