@@ -18,38 +18,44 @@ Given set: `[1, 5, 3]`
 4. Add the third number `3` to all the existing subsets: `[[], [1], [5], [1,5], `<b>`[3], [1,3], [5,3], [1,5,3]`</b>`]`.
 
 Since the input set has distinct elements, the above steps will ensure that we will not have any duplicate subsets.
-````js
-function findSubsets(nums) {
-  const subsets = [];
-  
-  //start by adding the empty subset
-  subsets.push([])
-  
-  for(let i = 0; i < nums.length; i++) {
-    const currentNumber = nums[i]
-    
-    //we will take all existing subsets and insert the current
-    //number in them to create new subsets
-    const n = subsets.length
+![](./images/Subsets1.png)
 
-    //create a new subset from the existing subset and insert
-    //the current element to it
-    for(let j = 0; j < n; j++) {
-      
-      //clone the permutation
-      // const set1 = subsets[j].slice(0)
-      
-      // set1.push(currentNumber)
-      subsets.push([...subsets[j], nums[i]])
+````java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Subsets {
+    public static List<List<Integer>> findSubsets(int[] nums) {
+        List<List<Integer>> subsets = new ArrayList<>();
+
+        // Start by adding the empty subset
+        subsets.add(new ArrayList<>());
+
+        for (int currentNumber: nums) {
+            int n = subsets.size();
+            // Create new subsets by inserting the current element into existing subsets
+            for (int j = 0; j < n; j++) {
+                List<Integer> set = new ArrayList<>(subsets.get(j));
+                set.add(currentNumber);
+                subsets.add(set);
+            }
+        }
+
+        return subsets;
     }
-  }
 
-  return subsets;
-};
+    public static void main(String[] args) {
+        int[] nums1 = {1, 3};
+        int[] nums2 = {1, 5, 3};
 
+        List<List<Integer>> subsets1 = findSubsets(nums1);
+        List<List<Integer>> subsets2 = findSubsets(nums2);
 
-findSubsets([1, 3])
-findSubsets([1, 5, 3])
+        System.out.println("Subsets for [1, 3]: " + subsets1);
+        System.out.println("Subsets for [1, 5, 3]: " + subsets2);
+    }
+}
+
 ````
 - Since, in each step, the number of subsets doubles as we add each element to all the existing subsets, therefore, we will have a total of `O(2ᴺ)` subsets, where `N` is the total number of elements in the input set. And since we construct a new subset from an existing set, therefore, the time complexity of the above algorithm will be `O(N*2ᴺ)`.
 - All the additional space used by our algorithm is for the output list. Since we will have a total of `O(2ᴺ)` subsets, and each subset can take up to `O(N)` space, therefore, the space complexity of our algorithm will be `O(N*2ᴺ)`.
@@ -85,43 +91,56 @@ To handle this instead of adding `3` to all the existing subsets, we only add it
 ````
 5. Finally, add the forth number `5` to all the existing subsets: `[[], [1], [3], [1,3], [3,3], [1,3,3], [5], [1,5], [3,5], [1,3,5], [3,3,5], [1,3,3,5]]`
 
-````js
-function subsetsWithDupe(nums) {
-  //sort the numbers to handle duplicates
-  nums.sort((a,b) => a-b)
-  
-  const subsets = [];
-  
-  subsets.push([])
-  
-  let start = 0
-  let end = 0
-  
-  for(let i = 0; i < nums.length; i++) {
-    start = 0
-    
-    //if current and the previous elements are the same,
-    //create new subsets only from the subsets
-    //added in the previous step
-    if(i > 0 && nums[i] === nums[i-1]) {
-      start = end + 1
-    }
-    
-    end = subsets.length - 1
-    
-    for(let j = start; j < end + 1; j++) {
-      //create a new subset from the existing subset and add the
-      //current element to it
-      subsets.push([...subsets[j], nums[i]])
-    }
-  }
-  
-  return subsets;
-};
+![](./images/Subsets2.png)
 
+````java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-subsetsWithDupe([1, 3, 3])
-subsetsWithDupe([1, 5, 3, 3])
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> subsets = new ArrayList<>();
+        subsets.add(new ArrayList<>());
+
+        int start = 0, end = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            start = 0;
+
+            // If current and the previous elements are the same,
+            // create new subsets only from the subsets
+            // added in the previous step
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                start = end + 1;
+            }
+
+            end = subsets.size() - 1;
+
+            for (int j = start; j < end + 1; j++) {
+                // Create a new subset from the existing subset and add the
+                // current element to it
+                List<Integer> subset = new ArrayList<>(subsets.get(j));
+                subset.add(nums[i]);
+                subsets.add(subset);
+            }
+        }
+
+        return subsets;
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+
+        List<List<Integer>> result1 = solution.subsetsWithDup(new int[]{1, 3, 3});
+        System.out.println("Subsets with Duplicates for [1, 3, 3]: " + result1);
+
+        List<List<Integer>> result2 = solution.subsetsWithDup(new int[]{1, 5, 3, 3});
+        System.out.println("Subsets with Duplicates for [1, 5, 3, 3]: " + result2);
+    }
+}
+
 ````
 - Since, in each step, the number of subsets doubles (if not duplicate) as we add each element to all the existing subsets, therefore, we will have a total of `O(2ᴺ)` subsets, where `N` is the total number of elements in the input set. And since we construct a new subset from an existing set, therefore, the time complexity of the above algorithm will be `O(N*2ᴺ)`.
 - All the additional space used by our algorithm is for the output list. Since, at most, we will have a total of `O(2ᴺ)` subsets, and each subset can take up to `O(N)` space, therefore, the space complexity of our algorithm will be `O(N*2ᴺ)`.
