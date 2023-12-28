@@ -10,6 +10,7 @@ Given that the input array is sorted, an efficient way would be to start with on
 1. If the sum of the two numbers pointed by the <b>two pointers</b> is greater than the target sum, this means that we need a pair with a smaller sum. So, to try more pairs, we can decrement the end-pointer.
 2. If the sum of the two numbers pointed by the <b>two pointers</b> is smaller than the target sum, this means that we need a pair with a larger sum. So, to try more pairs, we can increment the start-pointer.
 
+![](./images/twopointer1.png)
 ## 🌴 Pair with Target Sum  aka "Two Sum" (easy) 
 https://leetcode.com/problems/two-sum/
 > Given an array of sorted numbers and a `target` sum, find a pair in the array whose sum is equal to the given `target`.
