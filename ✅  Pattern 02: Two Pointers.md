@@ -23,48 +23,77 @@ We can follow the <b>Two Pointers</b> approach. We will start with one pointer p
 1. If the sum of the two numbers pointed by the <b>two pointers</b> is greater than the `target` sum, this means that we need a pair with a smaller sum. So, to try more pairs, we can decrement the end-pointer.
 2. If the sum of the two numbers pointed by the <b>two pointers</b> is smaller than the `target` sum, this means that we need a pair with a larger sum. So, to try more pairs, we can increment the start-pointer.
 ### Brute Force Solution
-````js
-function pairWithTargetSum(nums, target) {
-  for (let i = 0; i < nums.length; i++) {
-    for(let j = 1; j < nums.length; j++) {
-      if((nums[i] + nums[j]) === target) {
-        //they cannot be at the same index
-        if(i !== j) {
-          return [i, j]
+````java
+import java.util.Arrays;
+
+public class PairWithTargetSum {
+
+    public static int[] pairWithTargetSum(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if ((nums[i] + nums[j]) == target) {
+                    // They cannot be at the same index
+                    if (i != j) {
+                        return new int[]{i, j};
+                    }
+                }
+            }
         }
-      } 
+        // Return an array with -1 if no pair is found
+        return new int[]{-1, -1};
     }
-  }
+
+    public static void main(String[] args) {
+        int[] nums = {2, 7, 11, 15};
+        int target = 9;
+        int[] result = pairWithTargetSum(nums, target);
+
+        System.out.println("Indices of the pair with target sum: " + Arrays.toString(result));
+    }
 }
+
 ````
 ### Two pointer Solution
 Assume the input is sorted
-````js
-function pairWithTargetSum(arr, target) {
-  let start = 0
-  let end = arr.length-1
-  
-  while(start < end) {
-    let currentSum = arr[start] + arr[end]
-    
-    if(currentSum === target) {
-      return [start, end]
+````java
+import java.util.Arrays;
+
+public class PairWithTargetSum {
+
+    public static int[] pairWithTargetSum(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left < right) {
+            int currentSum = arr[left] + arr[right];
+
+            if (currentSum == target) {
+                return new int[]{left, right};
+            }
+
+            if (currentSum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        // Return an array with -1 if no pair is found
+        return new int[]{-1, -1};
     }
-    
-    if(currentSum < target) {
-      start++
-    } else {
-      end--
+
+    public static void main(String[] args) {
+        int[] arr1 = {1, 2, 3, 4, 6};
+        int target1 = 6;
+        int[] result1 = pairWithTargetSum(arr1, target1);
+        System.out.println("Indices of the pair with target sum: " + Arrays.toString(result1));
+
+        int[] arr2 = {2, 5, 9, 11};
+        int target2 = 11;
+        int[] result2 = pairWithTargetSum(arr2, target2);
+        System.out.println("Indices of the pair with target sum: " + Arrays.toString(result2));
     }
-  }
-  return 0  
 }
-
-pairWithTargetSum([1, 2, 3, 4, 6], 6)
-//[1,3]
-
-pairWithTargetSum([2, 5, 9, 11], 11)
-//[0,2]
 ````
 - The <b>time complexity</b> of the above algorithm will be `O(N)`, where `N` is the total number of elements in the given array.
 - The algorithm runs in constant space `O(1)`.
@@ -74,35 +103,36 @@ pairWithTargetSum([2, 5, 9, 11], 11)
 Instead of using a two-pointer or a binary search approach, we can utilize a <b>HashTable</b> to search for the required pair. We can iterate through the array one number at a time. Let’s say during our iteration we are at number `X`, so we need to find `Y` such that `“X + Y == Target”`. We will do two things here:
 1. Search for `Y` (which is equivalent to `“Target - X”`) in the HashTable. If it is there, we have found the required pair.
 2. Otherwise, insert `“X”` in the HashTable, so that we can search it for the later numbers.
-````js
-function pairWithTargetSum(nums, target) {
-  //Instead of using a two-pointer or a binary search approach, 
-  //we can utilize a HashTable to search for the required pair. 
-  //We can iterate through the array one number at a time. 
-  //Let’s say during our iteration we are at number ‘X’, 
-  //so we need to find ‘Y’ such that “X + Y == Target”. 
-  
-  //We will do two things here:
-  const arr = {}
-  for(let i = 0; i < nums.length; i ++){
-    let item = nums[i]
-     
-    if(target - item in arr) {
-      //1. Search for ‘Y’ (which is equivalent to “Target - X”) in the HashTable. 
-      //If it is there, we have found the required pair
-      return [arr[target - item], i]
+````java
+import java.util.*;
+
+public class PairWithTargetSum {
+
+      public static int[] twoSum(int[] nums, int target) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for(int i =0; i< nums.length; i++) {
+            if(map.containsKey(target - nums[i])){
+                return new int[]{map.get(target - nums[i]), i};
+            }else {
+                map.put(nums[i], i);
+            }
+        }
+        return new int[]{-1,-1};
     }
-    arr[nums[i]] = i
-    //2. Otherwise, insert “X” in the HashTable, so that we can search it for the later numbers.
-  }
-  return [-1, -1]
+
+    public static void main(String[] args) {
+        int[] nums1 = {1, 2, 3, 4, 6};
+        int target1 = 6;
+        int[] result1 = twoSum(nums1, target1);
+        System.out.println("Indices of the pair with target sum: " + Arrays.toString(result1));
+
+        int[] nums2 = {2, 5, 9, 11};
+        int target2 = 11;
+        int[] result2 = twoSum(nums2, target2);
+        System.out.println("Indices of the pair with target sum: " + Arrays.toString(result2));
+    }
 }
 
-pairWithTargetSum([1, 2, 3, 4, 6], 6)//[1, 3]
-pairWithTargetSum([2, 5, 9, 11], 11)//[0, 2]
-pairWithTargetSum([2, 7, 11, 15], 9)//[0, 1]
-pairWithTargetSum([3, 2, 4], 6)//[1, 2]
-pairWithTargetSum([3, 3], 6)//[0, 1]
 ````
 
 - The <b>time complexity</b> of the above algorithm will be `O(N)`, where `N` is the total number of elements in the given array.
