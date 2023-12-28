@@ -146,61 +146,108 @@ In this problem, we need to remove the duplicates </i>in-place</i> such that the
 
 <b>Assume the input is sorted</b>
 
-````js
-function removeDuplicates(arr) {
-  //shift the elements left when we encounter duplicates
-  
-  //one pointer for iterating
-  let i = 1
-  
-  //one pointer for placing this next non-duplicate
-  let nextNonDupe = 1
+````java
+public class RemoveDuplicates {
 
-  while(i < arr.length) {
-    if(arr[nextNonDupe -1] !== arr[i]) {
-      arr[nextNonDupe] = arr[i]
-      nextNonDupe++
+    public static int removeDuplicates(int[] arr) {
+        if (arr.length == 0) {
+            return 0;
+        }
+        // One pointer for placing the next non-duplicate
+        int nextNonDupe = 1;
+        for ( int i = 1;i < arr.length;i++;) {
+            if (arr[nextNonDupe - 1] != arr[i]) {
+                arr[nextNonDupe] = arr[i];
+                nextNonDupe++;
+            }
+            
+        }
+        return nextNonDupe;
     }
-    i++
-  }
-  return nextNonDupe  
+
+    public static void main(String[] args) {
+        int[] arr1 = {2, 3, 3, 3, 6, 9, 9};
+        int result1 = removeDuplicates(arr1);
+        System.out.println(result1);
+
+        int[] arr2 = {2, 2, 2, 11};
+        int result2 = removeDuplicates(arr2);
+        System.out.println(result2);
+    }
 }
 
-removeDuplicates([2, 3, 3, 3, 6, 9, 9])
-//4, The first four elements after removing the duplicates will be [2, 3, 6, 9].
-
-removeDuplicates([2, 2, 2, 11])
-//2, The first two elements after removing the duplicates will be [2, 11].
 ````
 - The <b>time complexity</b> of the above algorithm will be `O(N)`, where `N` is the total number of elements in the given array.
 - The algorithm runs in constant space `O(1)`.
+
+### ❗ Hash Set Solution 
+
+````java
+import java.util.*;
+public class RemoveDuplicates {
+
+    public static int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+
+        HashSet<Integer> uniqueSet = new HashSet<>();
+        int index = 0;
+
+        for (int num : nums) {
+            if (uniqueSet.add(num)) {
+                nums[index++] = num;
+            }
+        }
+
+        return index;
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {2, 3, 3, 3, 6, 9, 9};
+        int result1 = removeDuplicates(arr1);
+        System.out.println(result1);
+
+        int[] arr2 = {2, 2, 2, 11};
+        int result2 = removeDuplicates(arr2);
+        System.out.println(result2);
+    }
+}
+
+````
 
 ### Remove Element
 https://leetcode.com/problems/remove-element/
 
 > Given an unsorted array of numbers and a target `key`, remove all instances of `key` </i>in-place</i> and return the new length of the array.
 
-````js
-function removeElement(arr, key) {
-  //pointed for index of the next element which is not the key
-  let nextElement = 0;
+````java
+public class RemoveElement {
 
-  for (i = 0; i < arr.length; i++) {
-    if (arr[i] !== key) {
-      arr[nextElement] = arr[i];
-      nextElement++;
+    public static int removeElement(int[] nums, int val) {
+        int nextElement = 0;
+        for(int num : nums) {
+            if (num != val) {
+                nums[nextElement] = num;
+                nextElement++;
+            }
+        }
+        return nextElement;
     }
-  }
-  return nextElement;
+
+    public static void main(String[] args) {
+        int[] arr1 = {3, 2, 3, 6, 3, 10, 9, 3};
+        int key1 = 3;
+        int result1 = removeElement(arr1, key1);
+        System.out.println(result1);
+
+        int[] arr2 = {2, 11, 2, 2, 1};
+        int key2 = 2;
+        int result2 = removeElement(arr2, key2);
+        System.out.println(result2);
+    }
 }
 
-removeElement([3, 2, 3, 6, 3, 10, 9, 3], 3);
-//4
-// The array, [2, 6, 10, 9], will have a length of after removing every 'key'.
-
-removeElement([2, 11, 2, 2, 1], 2);
-// 2
-// The array, [11, 1], will have a length of 2 after removing every 'key'.
 ````
 - The <b>time complexity</b> of the above algorithm will be `O(N)`, where `N` is the total number of elements in the given array.
 - The algorithm runs in constant space `O(1)`.
