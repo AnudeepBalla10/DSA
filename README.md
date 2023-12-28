@@ -23,6 +23,8 @@ Here are a few other resources that I found helpful when learning <b>Data Struct
 😋
 - [Pramp](https://www.pramp.com/) - for mock interviews
 - [FreeCodeCamp's Algorithms](https://www.freecodecamp.org/learn/coding-interview-prep/#algorithms) - Extra practice, esp. the <b>Sort Algorithms</b> section.
+
+- [Java Visualizer](https://pythontutor.com/java.html#mode=edit)- Great for understanding DSA.
 # 
 #### 🌟 Challenge Questions
 
