@@ -261,41 +261,43 @@ An easier approach could be to first find the index of the first non-negative nu
 
 Since the numbers at both ends can give us the largest square, an alternate approach could be to use <b>two pointers</b> starting at both ends of the input array. At any step, whichever pointer gives us the bigger square, we add it to the result array and move to the next/previous number according to the pointer. 
 
-````js
-function makeSquares(arr) {
-  //The only trick is that we can have negative numbers in the input array, which will make it a bit difficult to generate the output array with squares in sorted order.
-  //An easier approach could be to first find the index of the first non-negative number in the array. 
-  //After that, we can use Two Pointers to iterate the array. 
-  //One pointer will move forward to iterate the non-negative numbers
-  //the other pointer will move backward to iterate the negative numbers. At any step, whichever number gives us a bigger square will be added to the output array.
-  //Since the numbers at both ends can give us the largest square, an alternate approach could be to use two pointers starting at both ends of the input array. At any step, whichever pointer gives us the bigger square, we add it to the result array and move to the next/previous number according to the pointer. 
-  
-  const n = arr.length;
-  let squares = Array(n).fill(0)
-  let highestSquareIndex = n - 1
-  let start = 0
-  let end = n-1
-  while(start<= end) {
-    let startSquare = arr[start] * arr[start]
-    let endSquare = arr[end] * arr[end]
-    
-    if(startSquare > endSquare) {
-      squares[highestSquareIndex]  = startSquare
-      start++
-    } else {
-      squares[highestSquareIndex]  = endSquare
-      end--
+````java
+import java.util.Arrays;
+
+public class Solution {
+    public static int[] makeSquares(int[] arr) {
+        int n = arr.length;
+        int[] squares = new int[n];
+        int highestSquareIndex = n - 1;
+        int start = 0;
+        int end = n - 1;
+
+        while (start <= end) {
+            int startSquare = arr[start] * arr[start];
+            int endSquare = arr[end] * arr[end];
+
+            if (startSquare > endSquare) {
+                squares[highestSquareIndex] = startSquare;
+                start++;
+            } else {
+                squares[highestSquareIndex] = endSquare;
+                end--;
+            }
+            highestSquareIndex--;
+        }
+
+        return squares;
     }
-    highestSquareIndex--
-  }
-  return squares
+
+    public static void main(String[] args) {
+        int[] result1 = makeSquares(new int[]{-2, -1, 0, 2, 3});
+        System.out.println(Arrays.toString(result1)); // Output: [0, 1, 4, 4, 9]
+
+        int[] result2 = makeSquares(new int[]{-3, -1, 0, 1, 2});
+        System.out.println(Arrays.toString(result2)); // Output: [0, 1, 1, 4, 9]
+    }
 }
 
-makeSquares([-2, -1, 0, 2, 3])
-//[0, 1, 4, 4, 9]
-
-makeSquares([-3, -1, 0, 1, 2])
-//[0, 1, 1, 4, 9]
 ````
 - The above algorithm’s <b>time complexity</b> will be `O(N)` as we are iterating the input array only once.
 - The above algorithm’s <b>space complexity</b> will also be `O(N)`; this space will be used for the output array.
