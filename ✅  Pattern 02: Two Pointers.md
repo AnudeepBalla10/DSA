@@ -313,54 +313,66 @@ To follow a similar approach, first, we will sort the array and then iterate thr
 
 Another difference from <b>[Pair with Target Sum](#🌴-pair-with-target-sum-aka-"two-sum"-easy)</b> is that we need to find all the unique triplets. To handle this, we have to skip any duplicate number. Since we will be sorting the array, so all the duplicate numbers will be next to each other and are easier to skip.
 
-````js
-function searchTriplets(arr) {
-  arr.sort((a, b) => a - b);
-  const triplets = [];
+````java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-  for (i = 0; i < arr.length; i++) {
-    if (i > 0 && arr[i] === arr[i - 1]) {
-      //skip the same element to avoid dupes
-      continue;
+public class Solution {
+    public static List<List<Integer>> searchTriplets(int[] arr) {
+        Arrays.sort(arr);
+        List<List<Integer>> triplets = new ArrayList<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            if (i > 0 && arr[i] == arr[i - 1]) {
+                // Skip the same element to avoid duplicates
+                continue;
+            }
+            searchPair(arr, -arr[i], i + 1, triplets);
+        }
+        return triplets;
     }
-    searchPair(arr, -arr[i], i + 1, triplets);
-  }
-  return triplets;
+
+    private static void searchPair(int[] arr, int targetSum, int start, List<List<Integer>> triplets) {
+        int end = arr.length - 1;
+
+        while (start < end) {
+            int currentSum = arr[start] + arr[end];
+            if (currentSum == targetSum) {
+                // Found the triplet
+                List<Integer> triplet = Arrays.asList(-targetSum, arr[start], arr[end]);
+                triplets.add(triplet);
+                start++;
+                end--;
+                while (start < end && arr[start] == arr[start - 1]) {
+                    // Skip the same element to avoid duplicates
+                    start++;
+                }
+                while (start < end && arr[end] == arr[end + 1]) {
+                    // Skip the same element to avoid duplicates
+                    end--;
+                }
+            } else if (targetSum > currentSum) {
+                // We need a pair with a bigger sum
+                start++;
+            } else {
+                // We need a pair with a smaller sum
+                end--;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        List<List<Integer>> result1 = searchTriplets(new int[]{-3, 0, 1, 2, -1, 1, -2});
+        System.out.println(result1); 
+        // Output: [[-3, 1, 2], [-2, 0, 2], [-2, 1, 1], [-1, 0, 1]]
+
+        List<List<Integer>> result2 = searchTriplets(new int[]{-5, 2, -1, -2, 3});
+        System.out.println(result2); 
+        // Output: [[-5, 2, 3], [-2, -1, 3]]
+    }
 }
 
-function searchPair(arr, targetSum, start, triplets) {
-  let end = arr.length - 1;
-
-  while (start < end) {
-    const currentSum = arr[start] + arr[end];
-    if (currentSum === targetSum) {
-      //found the triplet
-      triplets.push([-targetSum, arr[start], arr[end]]);
-      start++;
-      end--;
-      while (start < end && arr[start] === arr[start - 1]) {
-        //skip same element to avoid duplicates
-        start++;
-      }
-      while (start < end && arr[end] === arr[end + 1]) {
-        //skip same element to avoid duplicates
-        end--;
-      }
-    } else if (targetSum > currentSum) {
-      //we need a pair with a bigger sum
-      start++;
-    } else {
-      //we need a pair with a smaller sum
-      end--;
-    }
-  }
-}
-
-searchTriplets([-3, 0, 1, 2, -1, 1, -2]); 
-//[[-3, 1, 2], [-2, 0, 2], [-2, 1, 1], [-1, 0, 1]]
-
-searchTriplets([-5, 2, -1, -2, 3]); 
-//[[-5, 2, 3], [-2, -1, 3]]
 ````
 - Sorting the array will take `O(N * logN)`. The `searchPair()` function will take `O(N)`. As we are calling `searchPair()` for every number in the input array, this means that overall `searchTriplets()` will take `O(N * logN + N^2)`, which is asymptotically equivalent to `O(N^2)`.
 - Ignoring the space required for the output array, the <b>space complexity</b> of the above algorithm will be `O(N)` which is required for sorting.
@@ -374,52 +386,53 @@ This problem follows the <b>Two Pointers</b> pattern and is quite similar to <b>
 
 We can follow a similar approach to iterate through the array, taking one number at a time. At every step, we will save the difference between the triplet and the `targetSum`, so that in the end, we can return the triplet with the closest sum.
 
-````js
-function tripletSumCloseToTarget(arr, targetSum){
-  arr.sort((a, b) => a - b)
-  
-  let smallestDifference = Infinity
-  
-  for(let i = 0; i < arr.length - 2; i++) {
-    let start = i + 1
-    let end = arr.length - 1
-    
-    while(start < end) {
-      const targetDifference = targetSum - arr[i] - arr[start] - arr[end]
-      
-      if(targetDifference === 0) {
-        //we've found a triplet with an exact sum
-        //so return the sum of all the numbers
-        return targetSum - targetDifference
-      }
-      
-      if(Math.abs(targetDifference) < Math.abs(smallestDifference)) {
-        //save the closet difference
-        smallestDifference = targetDifference
-      }
-      //the second part of the followinf 'if' is to handle the smallest sum
-      //when we have more than one solution
-      if(Math.abs(targetDifference) < Math.abs(smallestDifference) || (Math.abs(targetDifference) === Math.abs(smallestDifference) && targetDifference > smallestDifference)) {
-        //save the closest and the biggest difference
-        smallestDifference = targetDifference
-      }
-      
-      if(targetDifference > 0) {
-        //we need a triplet with a bigger sum
-        start++
-      } else {
-        //we need a triplet with a smaller sum
-        end--
-      }
+````java
+import java.util.Arrays;
+
+public class Solution {
+    public static int tripletSumCloseToTarget(int[] arr, int targetSum) {
+        Arrays.sort(arr);
+
+        int smallestDifference = Integer.MAX_VALUE;
+
+        for (int i = 0; i < arr.length - 2; i++) {
+            int start = i + 1;
+            int end = arr.length - 1;
+
+            while (start < end) {
+                int targetDifference = targetSum - arr[i] - arr[start] - arr[end];
+
+                if (targetDifference == 0) {
+                    // We've found a triplet with an exact sum
+                    // So return the sum of all the numbers
+                    return targetSum - targetDifference;
+                }
+
+                if (Math.abs(targetDifference) < Math.abs(smallestDifference) || (Math.abs(targetDifference) == Math.abs(smallestDifference) && targetDifference > smallestDifference)) {
+                    // Save the closest and the biggest difference
+                    smallestDifference = targetDifference;
+                }
+
+                if (targetDifference > 0) {
+                    // We need a triplet with a bigger sum
+                    start++;
+                } else {
+                    // We need a triplet with a smaller sum
+                    end--;
+                }
+            }
+        }
+        return targetSum - smallestDifference;
     }
-  }
-  return targetSum - smallestDifference
+
+    public static void main(String[] args) {
+        System.out.println(tripletSumCloseToTarget(new int[]{-2, 0, 1, 2}, 2)); // Output: 1
+        System.out.println(tripletSumCloseToTarget(new int[]{-3, -1, 1, 2}, 1)); // Output: 0
+        System.out.println(tripletSumCloseToTarget(new int[]{1, 0, 1, 1}, 100)); // Output: 3
+        System.out.println(tripletSumCloseToTarget(new int[]{-1, 2, 1, -4}, 1)); // Output: 2
+    }
 }
 
-tripletSumCloseToTarget([-2, 0, 1, 2], 2)//1, he triplet [-2, 1, 2] has the closest sum to the target.
-tripletSumCloseToTarget([-3, -1, 1, 2], 1)//0, The triplet [-3, 1, 2] has the closest sum to the target.
-tripletSumCloseToTarget([1, 0, 1, 1], 100)//3, The triplet [1, 1, 1] has the closest sum to the target.
-tripletSumCloseToTarget([-1,2,1,-4], 1)//2, The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
 ````
 - Sorting the array will take `O(N* logN)`. Overall, the function will take `O(N * logN + N^2)`, which is asymptotically equivalent to `O(N^2)`
 - The above algorithm’s <b>space complexity</b> will be `O(N)`, which is required for sorting.
