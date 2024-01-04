@@ -20,43 +20,53 @@ Here are the steps for our [Binary Tree Path Sum](#binary-tree-path-sum-easy) pr
 3. At every step, see if the current node being visited is a leaf node and if its value is equal to the given number `S`. If both these conditions are true, we have found the required  <i>root-to-leaf path</i> , therefore return `true`.
 4. If the current node is a leaf but its value is not equal to the given number `S`, return `false`.
 
-````js
+````java
 class TreeNode {
-  constructor(value, left = null, right = null) {
-    this.value = value;
-    this.left = left;
-    this.right = right;
-  }
+    int value;
+    TreeNode left, right;
+
+    public TreeNode(int value, TreeNode left, TreeNode right) {
+        this.value = value;
+        this.left = left;
+        this.right = right;
+    }
+
+    public TreeNode(int value) {
+        this(value, null, null);
+    }
 }
 
-function hasPath(root, sum) {
-  if (!root) {
-    return false;
-  }
+class PathSum {
+    public static boolean hasPath(TreeNode root, int sum) {
+        if (root == null) {
+            return false;
+        }
 
-  //start DFS with the root of the tree
-  //if the current node is a leaf and it's value is
-  //equal to the sum then we've found a path
-  if (root.value === sum && root.left === null && root.right === null) {
-    return true;
-  }
+        // start DFS with the root of the tree
+        // if the current node is a leaf and its value is
+        // equal to the sum, then we've found a path
+        if (root.value == sum && root.left == null && root.right == null) {
+            return true;
+        }
 
-  //recursively call to traverse the left and right sub-tree
-  //return true if any of the two recursive calls return true
-  return (
-    hasPath(root.left, sum - root.value) ||
-    hasPath(root.right, sum - root.value)
-  );
+        // recursively call to traverse the left and right sub-tree
+        // return true if any of the two recursive calls return true
+        return hasPath(root.left, sum - root.value) || hasPath(root.right, sum - root.value);
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(12);
+        root.left = new TreeNode(7);
+        root.right = new TreeNode(1);
+        root.left.left = new TreeNode(9);
+        root.right.left = new TreeNode(10);
+        root.right.right = new TreeNode(5);
+
+        System.out.println("Tree has path: " + hasPath(root, 23));
+        System.out.println("Tree has path: " + hasPath(root, 16));
+    }
 }
 
-const root = new TreeNode(12);
-root.left = new TreeNode(7);
-root.right = new TreeNode(1);
-root.left.left = new TreeNode(9);
-root.right.left = new TreeNode(10);
-root.right.right = new TreeNode(5);
-console.log(`Tree has path: ${hasPath(root, 23)}`);
-console.log(`Tree has path: ${hasPath(root, 16)}`);
 ````
 - The time complexity of the above algorithm is `O(N)`, where `N` is the total number of nodes in the tree. This is due to the fact that we traverse each node once.
 - The space complexity of the above algorithm will be `O(N)` in the worst case. This space will be used to store the <b>recursion</b> stack. The worst case will happen when the given tree is a <i>linked list</i> (i.e., every node has only one child).
