@@ -289,39 +289,50 @@ Let’s take Example-2 mentioned above to generate all the permutations. Followi
 Let’s analyze the permutations in the 3rd and the 5th step. How can we generate the permutations in the 5th step from the permutations in the 3rd step?
 
 If we look closely, we will realize that in the 5th step, when we processed the new character `c`, we took all the permutations of the previous step (3rd) and changed the case of the letter `c` in them to create four new permutations.
-````js
-function findLetterCaseStringPermutations(str) {
-  const permutations = [];
-  permutations.push(str)
-  
-  //process every character of the string one by one
-  for(let i = 0; i < str.length; i++) {
-    //only characters we will skip digits
-    if(isNaN(parseInt(str[i]), 10)){
-      //we will take all exixting permutations and change the letter case appropriately
-      const n = permutations.length
-      
-      for(let j = 0; j < n; j++) {
-        //string to array
-        const chs = permutations[j].split('')
-        
-        //if the current character is in upper case
-        //change it to lower case or vice verse
-        if(chs[i] === chs[i].toLowerCase()) {
-          chs[i] = chs[i].toUpperCase()
-        } else {
-          chs[i] = chs[i].toLowerCase()
+````java
+import java.util.ArrayList;
+import java.util.List;
+
+public class LetterCaseStringPermutations {
+
+    public static List<String> findLetterCaseStringPermutations(String str) {
+        List<String> permutations = new ArrayList<>();
+        permutations.add(str);
+
+        // Process every character of the string one by one
+        for (int i = 0; i < str.length(); i++) {
+            // Only process characters, skip digits
+            if (!Character.isDigit(str.charAt(i))) {
+                // Take all existing permutations and change the letter case appropriately
+                int n = permutations.size();
+
+                for (int j = 0; j < n; j++) {
+                    // String to array
+                    char[] chs = permutations.get(j).toCharArray();
+
+                    // If the current character is in lower case, change it to upper case, or vice versa
+                    if (Character.isLowerCase(chs[i])) {
+                        chs[i] = Character.toUpperCase(chs[i]);
+                    } else {
+                        chs[i] = Character.toLowerCase(chs[i]);
+                    }
+
+                    permutations.add(String.valueOf(chs));
+                }
+            }
         }
-        permutations.push(chs.join(''))
-      }
+        return permutations;
     }
-  }
-  return permutations;
-};
 
+    public static void main(String[] args) {
+        List<String> permutations1 = findLetterCaseStringPermutations("ad52");
+        System.out.println("Permutations for 'ad52': " + permutations1);
 
-findLetterCaseStringPermutations("ad52")
-findLetterCaseStringPermutations("ab7c")
+        List<String> permutations2 = findLetterCaseStringPermutations("ab7c");
+        System.out.println("Permutations for 'ab7c': " + permutations2);
+    }
+}
+
 ````
 
 - Since we can have`2ᴺ` permutations at the most and while processing each permutation we convert it into a character array, the overall time complexity of the algorithm will be `O(N*2ᴺ)`.
