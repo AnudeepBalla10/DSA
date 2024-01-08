@@ -173,75 +173,104 @@ If we look closely, we will realize that when we add a new number `5`, we take e
 1. Inserting `5` before `3`: `[5,3,1]`
 2. Inserting `5` between `3` and `1`: `[3,5,1]`
 3. Inserting `5` after `1`: `[3,1,5]`
+   
+```java
+import java.util.ArrayList;
+import java.util.List;
 
-````js
-function findPermutations(nums) {
-  const result = [];
-  let permutations = [[]]
-  let numsLength = nums.length
-  
-   for(let i = 0; i < nums.length; i++) {
-     const currentNumber = nums[i]
-     
-     //we will take all existing permutations an add the
-     //current number to create a new permutation
-     const n = permutations.length
-     
-     for(let p = 0; p < n; p++){
-       const oldPermutation = permutations.shift()
-       console.log(oldPermutation)
-       
-       //create a new permutation by adding the current number at every position
-       for(let j  = 0; j < oldPermutation.length + 1; j++) {
-         
-         //clone the permutation
-         const newPermutation = oldPermutation.slice(0)
-         
-         //insert the current number at index j
-         newPermutation.splice(j, 0, currentNumber)
-         
-         if(newPermutation.length === numsLength) {
-           result.push(newPermutation)
-         } else {
-           permutations.push(newPermutation)
-         }
-       }
-     }
-   }
-  return result;
-};
+public class Solution {
 
-findPermutations([1, 3, 5])
-````
+    // Function to generate all permutations of an array
+    public List<List<Integer>> permute(int[] nums) {
+        // List to store the resulting permutations
+        List<List<Integer>> result = new ArrayList<>();
+
+        // List to store current permutations during the process
+        List<List<Integer>> permutations = new ArrayList<>();
+        permutations.add(new ArrayList<>()); // Start with an empty permutation
+
+        // Length of the input array
+        int numsLength = nums.length;
+
+        // Iterate through each number in the input array
+        for (int i = 0; i < nums.length; i++) {
+            int currentNumber = nums[i];
+
+             //we will take all existing permutations an add the
+             //current number to create a new permutation
+            int n = permutations.size();
+
+            // Iterate through each existing permutation
+            for (int p = 0; p < n; p++) {
+                 //clone the permutation
+                List<Integer> oldPermutation = permutations.remove(0);
+
+                
+                for (int j = 0; j < oldPermutation.size() + 1; j++) {
+                    // Create a new permutation by adding the current number at position j
+                    List<Integer> newPermutation = new ArrayList<>(oldPermutation);
+
+                     //insert the current number at index j
+                    newPermutation.add(j, currentNumber);
+
+                    // Check if the new permutation is complete
+                    if (newPermutation.size() == numsLength) {
+                        result.add(newPermutation); // Add complete permutation to the result
+                    } else {
+                        permutations.add(newPermutation); // Add incomplete permutation for further processing
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}
+
+
+```
+
 
 - We know that there are a total of `N!` permutations of a set with `N` numbers. In the algorithm above, we are iterating through all of these permutations with the help of the two ‘for’ loops. In each iteration, we go through all the current permutations to insert a new number in them. To insert a number into a permutation of size ‘`N` will take `O(N)`, which makes the overall time complexity of our algorithm `O(N*N!)`.
 - All the additional space used by our algorithm is for the `result` list and the `queue` to store the intermediate permutations. If you see closely, at any time, we don’t have more than `N!` permutations between the result list and the queue. Therefore the overall space complexity to store `N!` permutations each containing `N` elements will be `O(N*N!)`.
 
 ### Recursive Solution
-````js
-function permute(nums) {
-  //recursion
-  let subsets = []
- 
-  generatePermuationsRecursive(nums, 0, [], subsets)
-  
-  return subsets   
-};
+````java
 
-function generatePermuationsRecursive(nums, index, currentPermuation, subsets) {
-    if(index === nums.length) {
-      subsets.push(currentPermuation)
-    } else {
-      //create a new permuation by adding the current number at every position
-      for(let i = 0; i < currentPermuation.length +1; i++) {
-        let newPermutation = currentPermuation.slice(0)
-        
-        //insert nums[index] at index i
-        newPermutation.splice(i, 0, nums[index])
-        generatePermuationsRecursive(nums, index+1, newPermutation, subsets)
-      }
-    }  
-  }
+import java.util.ArrayList;
+import java.util.List;
+
+public class Permutations {
+
+    public static List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> subsets = new ArrayList<>();
+        generatePermutationsRecursive(nums, 0, new ArrayList<>(), subsets);
+        return subsets;
+    }
+
+    public static void generatePermutationsRecursive(int[] nums, int index, List<Integer> currentPermutation, List<List<Integer>> subsets) {
+        if (index == nums.length) {
+            subsets.add(new ArrayList<>(currentPermutation));
+        } else {
+            for (int i = 0; i < currentPermutation.size() + 1; i++) {
+                List<Integer> newPermutation = new ArrayList<>(currentPermutation);
+                newPermutation.add(i, nums[index]);
+                generatePermutationsRecursive(nums, index + 1, newPermutation, subsets);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] array = {1, 2, 3};
+        List<List<Integer>> permutations = permute(array);
+
+        System.out.println("Permutations:");
+        for (List<Integer> permutation : permutations) {
+            System.out.println(permutation);
+        }
+    }
+}
+
+
   ````
 ## String Permutations by changing case (medium)
 https://leetcode.com/problems/letter-case-permutation/
