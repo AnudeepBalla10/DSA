@@ -1,3 +1,7 @@
+![Status](https://img.shields.io/badge/Status-Work_in_Progress-yellow)
+![Contribute](https://img.shields.io/badge/Contribute-Welcome-brightgreen)
+
+
 # Solving Interview Puzzles: Essential Coding Patterns for Data Structures and Algorithms
 
 These are my notes in <b>Java</b> from a [course](https://www.educative.io/courses/grokking-the-coding-interview) that categorizes coding interview problems into a set of <b>16 patterns</b>. 
